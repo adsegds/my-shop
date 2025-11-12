@@ -22,7 +22,7 @@
         <div id="items"></div>
         <div class="total">合計: ¥<span id="total">0</span></div>
 
-        <!-- お客様メール入力欄 -->
+        <!-- お客様メール入力 -->
         <div class="email-input">
             <label>お客様メール（確認メール送信）:</label>
             <input type="email" id="customerEmail" placeholder="example@gmail.com" required>
@@ -50,18 +50,18 @@
         }
         document.getElementById('total').innerText = total;
 
-        // ここに君の関数を追加！
-        function confirmOrder() {
+        async function confirmOrder() {
             const customerEmail = document.getElementById('customerEmail').value;
             if (!customerEmail) {
-                alert('お客様メールを入力してください！');
+                alert('メールを入力してください！');
                 return;
             }
+
             const orderText = cart.map(item => `${item.name} x1 (¥${item.price})`).join('\n');
             const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
 
             // 1. 君（店主）に送信
-            fetch('https://formspree.io/f/xpwkzgnz', {  // 君のURL
+            await fetch('https://formspree.io/f/xpwkzgnz', {  // 君のURL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -71,7 +71,7 @@
             });
 
             // 2. 客に送信
-            fetch('https://formspree.io/f/xyz789', {  // 客のURL（あとで作る）
+            await fetch('https://formspree.io/f/xyz789', {  // 客のURL
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
