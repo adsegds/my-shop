@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ローソン 和泉町店 デリバリー</title>
+    <title>ローソン 和泉町店</title>
     <style>
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
         header { background: #032f4b; color: white; padding: 15px; text-align: center; }
         .search-bar { padding: 10px; }
         .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
-        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; }
+        .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px; scrollbar-width: none; }
+        .category-slider { display: inline-flex; gap: 15px; }
+        .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
+        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
         .category-arrow { float: right; color: #666; font-size: 0.9em; }
         .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; }
-        .slider-container::-webkit-scrollbar { display: none; }
         .slider { display: inline-flex; gap: 12px; }
         .product-card { background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
@@ -32,52 +34,45 @@
         <input type="text" placeholder="商品を検索...">
     </div>
 
-    <script>
-        const categories = [
-            { id: 1, name: "ペットボトル飲料", link: "#" }, // リンク追加で別ページ
-            { id: 2, name: "お菓子", link: "#" },
-            { id: 3, name: "からあげくん・揚げ物", link: "#" },
-            // カテゴリー増やし放題！ ここに追加
-        ];
+    <!-- カテゴリー横スライド -->
+    <div class="category-slider-container">
+        <div class="category-slider">
+            <a href="drinks.html" class="category-item">ペットボトル飲料</a>
+            <a href="snacks.html" class="category-item">お菓子</a>
+            <a href="fried.html" class="category-item">からあげくん・揚げ物</a>
+            <a href="bento.html" class="category-item">お弁当</a>
+            // カテゴリー増やし放題！ <a href="new-cat.html" class="category-item">新カテゴリー</a> 追加
+        </div>
+    </div>
 
+    <div class="category" onclick="location.href='drinks.html'">ペットボトル飲料 <span class="category-arrow">></span></div>
+    <div class="slider-container"><div class="slider" id="slider1"></div></div>
+
+    <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
+    <div class="slider-container"><div class="slider" id="slider2"></div></div>
+
+    <div class="cart">
+        <button onclick="checkout()">注文する (<span id="count">0</span>個)</button>
+    </div>
+
+    <script>
         const products = [
             { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
             { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
             { id: 3, cat: 1, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 15 },
             { id: 4, cat: 2, name: "プリングルズ<サワークリーム&オニオン> (26g)", price: 398, image: "https://i.imgur.com/pringles.jpg", stock: 8 },
             { id: 5, cat: 2, name: "金のとりから からあげくん", price: 88, image: "https://i.imgur.com/torikara.jpg", stock: 12 },
-            { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 },
-            { id: 7, cat: 3, name: "からあげくんレギュラー (5個)", price: 180, image: "https://i.imgur.com/karaage1.jpg", stock: 10 },
-            { id: 8, cat: 3, name: "バスケットポテト (1個)", price: 188, image: "https://i.imgur.com/potato.jpg", stock: 5 },
-            { id: 9, cat: 3, name: "Lチキんドッグ (1個)", price: 175, image: "https://i.imgur.com/chicken.jpg", stock: 7 },
-            // 商品増やし放題！ ここに追加
+            { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 }
         ];
 
         let cartCount = 0;
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-        // カテゴリー表示
-        categories.forEach(cat => {
-            const div = document.createElement('div');
-            div.className = 'category';
-            div.innerHTML = `${cat.name} <span class="category-arrow"> > </span>`;
-            div.onclick = () => window.location.href = cat.link;
-            document.body.insertBefore(div, document.body.lastChild);
-
-            const sliderContainer = document.createElement('div');
-            sliderContainer.className = 'slider-container';
-            const slider = document.createElement('div');
-            slider.className = 'slider';
-            slider.id = `slider${cat.id}`;
-            sliderContainer.appendChild(slider);
-            document.body.insertBefore(sliderContainer, document.body.lastChild);
-        });
-
         function render() {
-            categories.forEach(cat => {
-                const slider = document.getElementById(`slider${cat.id}`);
+            ['slider1', 'slider2'].forEach((id, i) => {
+                const slider = document.getElementById(id);
                 slider.innerHTML = '';
-                products.filter(p => p.cat === cat.id).forEach(p => {
+                products.filter(p => p.cat === i + 1).forEach(p => {
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     card.innerHTML = `
