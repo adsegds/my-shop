@@ -25,20 +25,24 @@
         .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
         .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
         .checkout-fixed { 
-    position: fixed; 
-    top: 70px; 
-    right: 15px; 
-    background: #4caf50; 
-    color: white; 
-    border: none; 
-    padding: 14px 25px; 
-    border-radius: 28px; 
-    font-size: 1.3em; 
-    cursor: pointer; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
-    z-index: 999; 
-    display: none; 
-}
+            position: fixed; 
+            top: 70px; 
+            right: 15px; 
+            background: #4caf50; 
+            color: white; 
+            border: none; 
+            padding: 14px 25px; 
+            border-radius: 28px; 
+            font-size: 1.3em; 
+            cursor: pointer; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+            z-index: 999; 
+            display: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .cart-icon { font-size: 1.2em; }
     </style>
 </head>
 <body>
@@ -63,9 +67,12 @@
     <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
-    <button class="checkout-fixed" onclick="checkout()">注文する (<span id="count">0</span>個)</button>
+    <button class="checkout-fixed" onclick="checkout()">
+        <span class="cart-icon">Cart</span> 注文する (<span id="count">0</span>個)
+    </button>
 
     <script>
+        // 省略（前と同じ）
         const products = [
             { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
             { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
@@ -122,7 +129,7 @@
 
             const checkoutBtn = document.querySelector('.checkout-fixed');
             if (checkoutBtn) {
-                checkoutBtn.style.display = cartCount > 0 ? 'block' : 'none';
+                checkoutBtn.style.display = cartCount > 0 ? 'flex' : 'none';
             }
         }
 
@@ -134,17 +141,11 @@
             }
         }
 
-        // ページ読み込み時
         render();
 
-        // カート変更を検知（別タブ/ページ戻り対応）
         window.addEventListener('storage', (e) => {
-            if (e.key === 'cart') {
-                updateCartUI();
-            }
+            if (e.key === 'cart') updateCartUI();
         });
-
-        // フォーカス時にも更新（戻った時用）
         window.addEventListener('focus', updateCartUI);
     </script>
 </body>
