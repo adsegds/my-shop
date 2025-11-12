@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>カート - 田舎コンビニ</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .total { font-size: 1.3em; font-weight: bold; text-align: right; margin: 20px 0; }
+        .checkout-btn { background: #4caf50; color: white; border: none; width: 100%; padding: 15px; border-radius: 25px; font-size: 1.2em; cursor: pointer; }
+        .back { text-align: center; margin-top: 20px; }
+        .back a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header><h1>カート</h1></header>
+    <div class="container">
+        <div id="items"></div>
+        <div class="total">合計: ¥<span id="total">0</span></div>
+        <button class="checkout-btn" onclick="confirmOrder()">注文を確定する</button>
+        <div class="back"><a href="/" target="_blank">メニューに戻る</a></div>
+    </div>
+
+    <script>
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const itemsDiv = document.getElementById('items');
+        let total = 0;
+
+        if (cart.length === 0) {
+            itemsDiv.innerHTML = '<p style="text-align:center;color:#666;">カートは空です</p>';
+        } else {
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `<span>${item.name}</span><span>¥${item.price}</span>`;
+                itemsDiv.appendChild(div);
+                total += item.price;
+            });
+        }
+
+        document.getElementById('total').innerText = total;
+
+        function confirmOrder() {
+            alert(`注文確定！合計¥${total}\n店舗で「ネット注文」とお伝えください。`);
+            localStorage.removeItem('cart');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
