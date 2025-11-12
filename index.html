@@ -3,40 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ローソン 和泉町店 デリバリー</title>
+    <title>ローソン 和泉町店</title>
     <style>
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
         header { background: #032f4b; color: white; padding: 15px; text-align: center; }
         .search-bar { padding: 10px; }
         .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
-        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; }
+        .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px; scrollbar-width: none; }
+        .category-slider { display: inline-flex; gap: 15px; }
+        .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
+        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
+        .category-arrow { float: right; color: #666; font-size: 0.9em; }
         .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; }
-        .slider-container::-webkit-scrollbar { display: none; }
         .slider { display: inline-flex; gap: 12px; }
-        .product-grid { padding-bottom: 70px; } /* ← 修正！ 被さり回避で余白増やし */
-        .product-card { background: white; border-radius: 12px; width: 160px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .product-img { width: 100%; height: 120px; object-fit: cover; }
-        .product-info { padding: 10px; }
-        .product-name { font-size: 0.9em; margin: 0 0 5px; white-space: normal; line-height: 1.3; }
-        .product-price { font-weight: bold; color: #e91e63; font-size: 1.1em; }
-        .add-btn { background: #007bff; color: white; border: none; width: 100%; padding: 8px; border-radius: 8px; font-size: 0.9em; margin-top: 8px; cursor: pointer; }
+        .product-card { background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .product-img { width: 100%; height: 100px; object-fit: cover; }
+        .product-info { padding: 8px; }
+        .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
+        .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
+        .add-btn { background: #007bff; color: white; border: none; width: 100%; padding: 6px; border-radius: 6px; font-size: 0.8em; margin-top: 5px; cursor: pointer; }
         .add-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .add-btn:hover:not(:disabled) { background: #0056b3; }
-        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 50px; } /* ← 修正！ バーを細く */
-        .cart button { background: #4caf50; color: white; border: none; padding: 8px 30px; border-radius: 25px; font-size: 1em; cursor: pointer; } /* ← ボタン調整 */
+        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 60px; }
+        .cart button { background: #4caf50; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; }
     </style>
 </head>
 <body>
     <header><h1>ローソン 和泉町店</h1></header>
 
     <div class="search-bar">
-        <input type="text" placeholder="商品を検索..." oninput="search(this.value)">
+        <input type="text" placeholder="商品を検索...">
     </div>
 
-    <div class="category">Uber One メンバー限定 フライドポテト</div>
+    <!-- カテゴリー横スライド -->
+    <div class="category-slider-container">
+        <div class="category-slider">
+            <a href="drinks.html" class="category-item">ペットボトル飲料</a>
+            <a href="snacks.html" class="category-item">お菓子</a>
+            <a href="fried.html" class="category-item">からあげくん・揚げ物</a>
+            <a href="bento.html" class="category-item">お弁当</a>
+            // カテゴリー増やし放題！ <a href="new-cat.html" class="category-item">新カテゴリー</a> 追加
+        </div>
+    </div>
+
+    <div class="category" onclick="location.href='drinks.html'">ペットボトル飲料 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider1"></div></div>
 
-    <div class="category">ペットボトル飲料</div>
+    <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
     <div class="cart">
@@ -44,14 +56,13 @@
     </div>
 
     <script>
-        // 君の商品コード (前のもの)
         const products = [
-            { id: 1, name: "フライトポテト [BOX]", price: 680, image: "https://i.imgur.com/fries1.jpg", stock: 10, cat: 1 },
-            { id: 2, name: "フライトポテト×からあげくん", price: 720, image: "https://i.imgur.com/fries2.jpg", stock: 5, cat: 1 },
-            { id: 3, name: "フライトポテト×からあげくんレギュラー", price: 720, image: "https://i.imgur.com/fries3.jpg", stock: 3, cat: 1 },
-            { id: 4, name: "クラフトボス甘くないイタリアーノ", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 15, cat: 2 },
-            { id: 5, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 20, cat: 2 },
-            { id: 6, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 0, cat: 2 }
+            { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
+            { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
+            { id: 3, cat: 1, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 15 },
+            { id: 4, cat: 2, name: "プリングルズ<サワークリーム&オニオン> (26g)", price: 398, image: "https://i.imgur.com/pringles.jpg", stock: 8 },
+            { id: 5, cat: 2, name: "金のとりから からあげくん", price: 88, image: "https://i.imgur.com/torikara.jpg", stock: 12 },
+            { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 }
         ];
 
         let cartCount = 0;
@@ -99,8 +110,6 @@
                 alert('カートが空です！');
             }
         }
-
-        function search(q) { render(); }
 
         render();
     </script>
