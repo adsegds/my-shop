@@ -14,7 +14,7 @@
         .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
         .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
         .category-arrow { float: right; color: #666; font-size: 0.9em; }
-        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; } /* ← 70px → 50px */
+        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 50px; scrollbar-width: none; }
         .slider { display: inline-flex; gap: 12px; }
         .product-card { 
             position: relative; 
@@ -122,14 +122,13 @@
                 });
             });
 
+            // カートカウントとボタン表示を更新（追加！）
             const countSpan = document.getElementById('count');
-            countSpan.innerText = cartCount;
+            if (countSpan) countSpan.innerText = cartCount;
 
             const checkoutBtn = document.querySelector('.checkout-fixed');
-            if (cartCount > 0) {
-                checkoutBtn.style.display = 'block';
-            } else {
-                checkoutBtn.style.display = 'none';
+            if (checkoutBtn) {
+                checkoutBtn.style.display = cartCount > 0 ? 'block' : 'none';
             }
         }
 
@@ -137,7 +136,7 @@
             const p = products.find(x => x.id === id);
             if (p.stock > 0) {
                 p.stock--;
-                cart.push({ name: p.name, price: p.price });
+                cart.push({ name: p.name, price: p.price, image: p.image });
                 localStorage.setItem('cart', JSON.stringify(cart));
                 cartCount++;
                 render();
