@@ -12,6 +12,7 @@
         .checkout-btn { background: #4caf50; color: white; border: none; width: 100%; padding: 15px; border-radius: 25px; font-size: 1.2em; cursor: pointer; }
         .back { text-align: center; margin-top: 20px; }
         .back a { color: #007bff; text-decoration: none; }
+        form { display: none; } /* 隠しフォーム */
     </style>
 </head>
 <body>
@@ -19,7 +20,15 @@
     <div class="container">
         <div id="items"></div>
         <div class="total">合計: ¥<span id="total">0</span></div>
-        <button class="checkout-btn" onclick="confirmOrder()">注文を確定する</button>
+        <button class="checkout-btn" onclick="showForm()">注文を確定する</button>
+        
+        <!-- 隠しフォーム (Formspreeでメール送信) -->
+        <form id="orderForm" action="https://formspree.io/f/YOUR_ENDPOINT_HERE" method="POST"> <!-- Formspree URLに置き換え -->
+            <input type="hidden" name="注文内容" id="orderData">
+            <input type="email" name="注文者メール" placeholder="メールアドレス (通知用)" required>
+            <button type="submit">送信</button>
+        </form>
+        
         <div class="back"><a href="/" target="_blank">メニューに戻る</a></div>
     </div>
 
@@ -41,6 +50,15 @@
         }
 
         document.getElementById('total').innerText = total;
+
+        function showForm() {
+            if (cart.length > 0) {
+                const orderData = cart.map(item => `${item.name} x1 (¥${item.price})`).join('\n');
+                document.getElementById('orderData').value = `合計¥${total}\n${orderData}`;
+                document.getElementById('orderForm').style.display = 'block';
+                document.getElementById('orderForm').scrollIntoView();
+            }
+        }
 
         function confirmOrder() {
             alert(`注文確定！合計¥${total}\n店舗で「ネット注文」とお伝えください。`);
