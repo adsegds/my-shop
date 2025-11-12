@@ -3,107 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>田舎コンビニ 取り置きデリバリー</title>
+    <title>ローソン 和泉町店 デリバリー</title>
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
-        header { background: #032f4b; color: white; padding: 10px; text-align: center; }
-        .search-bar { margin: 10px; }
-        .search-bar input { width: 90%; padding: 10px; border-radius: 20px; border: none; }
-        .category { margin: 20px 10px; font-size: 1.2em; color: #333; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 0 10px; }
-        .product-card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .product-img { width: 100%; height: 120px; object-fit: cover; }
-        .product-info { padding: 10px; }
-        .product-name { font-size: 1em; margin: 0; }
-        .product-price { font-weight: bold; color: #e91e63; }
-        .add-btn { background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; }
-        .add-btn:hover { background: #0056b3; }
-        .add-btn.disabled { background: #ccc; cursor: not-allowed; }
-        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 10px; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); text-align: center; }
-        .cart button { background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; }
+        body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
+        .search-bar { padding: 10px; }
+        .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
+        
+        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; }
+        
+        /* 横スライドコンテナ */
+        .slider-container {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 10px 15px;
+            scrollbar-width: none;
+        }
+        .slider-container::-webkit-scrollbar { display: none; }
+        
+        .slider {
+            display: inline-flex;
+            gap: 12px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            width: 160px;
+            flex-shrink: 0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .product-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .product-info {
+            padding: 10px;
+        }
+        .product-name {
+            font-size: 0.9em;
+            margin: 0 0 5px;
+            white-space: normal;
+            line-height: 1.3;
+        }
+        .product-price {
+            font-weight: bold;
+            color: #e91e63;
+            font-size: 1.1em;
+        }
+        .add-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        .add-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .add-btn:hover:not(:disabled) {
+            background: #0056b3;
+        }
+        
+        .cart {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            padding: 12px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .cart button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>ローソン 和泉町店 デリバリー</h1>
+        <h1>ローソン 和泉町店</h1>
     </header>
+
     <div class="search-bar">
-        <input type="text" placeholder="ローソン 和泉町店 Lawson izumi..." oninput="searchProducts(this.value)">
+        <input type="text" placeholder="商品を検索..." oninput="search(this.value)">
     </div>
-    <div class="category">Uber One メンバー限定 フライトポテト</div>
-    <div class="product-grid" id="grid1">
-        <!-- 商品はJSで追加 -->
+
+    <div class="category">Uber One メンバー限定 フライドポテト</div>
+    <div class="slider-container">
+        <div class="slider" id="slider1"></div>
     </div>
+
     <div class="category">ペットボトル飲料</div>
-    <div class="product-grid" id="grid2">
-        <!-- 商品はJSで追加 -->
+    <div class="slider-container">
+        <div class="slider" id="slider2"></div>
     </div>
+
     <div class="cart">
-        <button onclick="checkout()">注文する (カート: <span id="cart-count">0</span>個)</button>
+        <button onclick="checkout()">注文する (<span id="count">0</span>個)</button>
     </div>
 
     <script>
         const products = [
-            { id: 1, name: "フライトポテト [BOX]", price: 680, image: "https://i.imgur.com/fries-box.jpg", stock: 10, category: 1 },
-            { id: 2, "name": "フライトポテトからあげくん", price: 720, image: "https://i.imgur.com/fries-karaage.jpg", stock: 5, category: 1 },
-            { id: 3, name: "フライトポテトからあげくん", price: 720, image: "https://i.imgur.com/fries-karaage2.jpg", stock: 3, category: 1 },
-            { id: 4, name: "ベットボトル飲料 ペットボトル飲料", price: 258, image: "https://i.imgur.com/bottle1.jpg", stock: 15, category: 2 },
-            { id: 5, name: "サンリー 天然水", price: 188, image: "https://i.imgur.com/bottle2.jpg", stock: 20, category: 2 },
-            { id: 6, name: "コカ・コーラ", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 0, category: 2 }
+            { id: 1, name: "フライトポテト [BOX]", price: 680, image: "https://i.imgur.com/fries1.jpg", stock: 10, cat: 1 },
+            { id: 2, name: "フライトポテト×からあげくん", price: 720, image: "https://i.imgur.com/fries2.jpg", stock: 5, cat: 1 },
+            { id: 3, name: "フライトポテト×からあげくんレギュラー", price: 720, image: "https://i.imgur.com/fries3.jpg", stock: 3, cat: 1 },
+            { id: 4, name: "クラフトボス甘くないイタリアーノ", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 15, cat: 2 },
+            { id: 5, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 20, cat: 2 },
+            { id: 6, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 0, cat: 2 }
         ];
 
         let cart = 0;
 
-        function renderProducts() {
-            const grid1 = document.getElementById('grid1');
-            const grid2 = document.getElementById('grid2');
-            grid1.innerHTML = '';
-            grid2.innerHTML = '';
-
-            products.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <img class="product-img" src="${p.image}" alt="${p.name}">
-                    <div class="product-info">
-                        <p class="product-name">${p.name}</p>
-                        <p class="product-price">¥${p.price}</p>
-                        <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>+ ${p.stock > 0 ? '' : '売り切れ'}</button>
-                    </div>
-                `;
-                if (p.category === 1) grid1.appendChild(card);
-                if (p.category === 2) grid2.appendChild(card);
+        function render() {
+            ['slider1', 'slider2'].forEach((id, i) => {
+                const slider = document.getElementById(id);
+                slider.innerHTML = '';
+                products.filter(p => p.cat === i + 1).forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img class="product-img" src="${p.image}" alt="${p.name}">
+                        <div class="product-info">
+                            <p class="product-name">${p.name}</p>
+                            <p class="product-price">¥${p.price}</p>
+                            <button class="add-btn" onclick="add(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>
+                                ${p.stock > 0 ? '+' : '売り切れ'}
+                            </button>
+                        </div>
+                    `;
+                    slider.appendChild(card);
+                });
             });
         }
 
-        function addToCart(id) {
+        function add(id) {
             const p = products.find(x => x.id === id);
             if (p.stock > 0) {
-                p.stock--;
-                cart++;
-                document.getElementById('cart-count').innerText = cart;
-                renderProducts();
-                alert(`${p.name}をカートに追加！残在庫: ${p.stock}`);
+                p.stock--; cart++;
+                document.getElementById('count').innerText = cart;
+                render();
             }
         }
 
         function checkout() {
-            if (cart > 0) {
-                alert(`注文確定！ ${cart}個の商品を準備します。店舗で受け取りください。`);
-                cart = 0;
-                document.getElementById('cart-count').innerText = cart;
-            } else {
-                alert('カートが空です！');
-            }
+            if (cart > 0) alert(`注文確定！${cart}個を準備します。`);
+            else alert('カートが空です');
         }
 
-        function searchProducts(query) {
-            // 検索機能（簡易）
-            products.forEach(p => p.visible = p.name.toLowerCase().includes(query.toLowerCase()));
-            renderProducts();
+        function search(q) {
+            // 簡易検索（必要なら強化）
+            render();
         }
 
-        renderProducts();
+        render();
     </script>
 </body>
 </html>
