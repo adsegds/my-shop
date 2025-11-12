@@ -14,7 +14,7 @@
         .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
         .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
         .category-arrow { float: right; color: #666; font-size: 0.9em; }
-        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; }
+        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 90px; scrollbar-width: none; } /* ← 余白増やし */
         .slider { display: inline-flex; gap: 12px; }
         .product-card { background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
@@ -23,8 +23,8 @@
         .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
         .add-btn { background: #007bff; color: white; border: none; width: 100%; padding: 6px; border-radius: 6px; font-size: 0.8em; margin-top: 5px; cursor: pointer; }
         .add-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 60px; }
-        .cart button { background: #4caf50; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; }
+        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 50px; } /* ← 細く */
+        .cart button { background: #4caf50; color: white; border: none; padding: 8px 30px; border-radius: 25px; font-size: 1em; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -41,10 +41,10 @@
             <a href="snacks.html" class="category-item">お菓子</a>
             <a href="fried.html" class="category-item">からあげくん・揚げ物</a>
             <a href="bento.html" class="category-item">お弁当</a>
-            // カテゴリー増やし放題！ <a href="new-cat.html" class="category-item">新カテゴリー</a> 追加
         </div>
     </div>
 
+    <!-- カテゴリー + 矢印リンク -->
     <div class="category" onclick="location.href='drinks.html'">ペットボトル飲料 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider1"></div></div>
 
