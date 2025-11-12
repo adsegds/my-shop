@@ -112,14 +112,13 @@
                 grid.appendChild(card);
             });
 
+            // カートカウントとボタン表示を更新（追加！）
             const countSpan = document.getElementById('count');
-            countSpan.innerText = cartCount;
+            if (countSpan) countSpan.innerText = cartCount;
 
             const checkoutBtn = document.querySelector('.checkout-fixed');
-            if (cartCount > 0) {
-                checkoutBtn.style.display = 'block';
-            } else {
-                checkoutBtn.style.display = 'none';
+            if (checkoutBtn) {
+                checkoutBtn.style.display = cartCount > 0 ? 'block' : 'none';
             }
         }
 
@@ -127,7 +126,7 @@
             const p = products.find(x => x.id === id);
             if (p.stock > 0) {
                 p.stock--;
-                cart.push({ name: p.name, price: p.price });
+                cart.push({ name: p.name, price: p.price, image: p.image });
                 localStorage.setItem('cart', JSON.stringify(cart));
                 cartCount++;
                 render();
