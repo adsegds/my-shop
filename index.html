@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店</title>
     <style>
+        /* 省略（前と同じ） */
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
         header { background: #032f4b; color: white; padding: 15px; text-align: center; position: relative; }
         .search-bar { padding: 10px; }
@@ -14,56 +15,16 @@
         .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
         .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
         .category-arrow { float: right; color: #666; font-size: 0.9em; }
-        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; }
+        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 50px; scrollbar-width: none; }
         .slider { display: inline-flex; gap: 12px; }
-        .product-card { 
-            position: relative; 
-            background: white; 
-            border-radius: 12px; 
-            width: 140px; 
-            flex-shrink: 0; 
-            overflow: hidden; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
-        }
+        .product-card { position: relative; background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
-        .add-btn { 
-            position: absolute; 
-            right: 8px; 
-            bottom: 8px; 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 50%; 
-            font-size: 1.2em; 
-            line-height: 1; 
-            padding: 0; 
-            cursor: pointer; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
+        .add-btn { position: absolute; right: 8px; bottom: 8px; background: #007bff; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2em; line-height: 1; padding: 0; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
         .add-btn:disabled { background: #ccc; cursor: not-allowed; }
         .product-info { padding: 8px; }
         .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
         .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
-        .checkout-fixed { 
-            position: fixed; 
-            top: 50px; 
-            right: 15px; 
-            background: #4caf50; 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            border-radius: 25px; 
-            font-size: 1.1em; 
-            cursor: pointer; 
-            box-shadow: 0 3px 8px rgba(0,0,0,0.3); 
-            z-index: 999; 
-            display: none; 
-        }
+        .checkout-fixed { position: fixed; top: 50px; right: 15px; background: #4caf50; color: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 1.1em; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.3); z-index: 999; display: none; }
     </style>
 </head>
 <body>
@@ -100,8 +61,9 @@
             { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 }
         ];
 
-        let cartCount = 0;
+        // ページ読み込み時に最新カートを取得
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let cartCount = cart.length;
 
         function render() {
             ['slider1', 'slider2'].forEach((id, i) => {
@@ -122,7 +84,10 @@
                 });
             });
 
-            // カートカウントとボタン表示を更新（追加！）
+            // 最新カートを再取得してカウント更新
+            cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            cartCount = cart.length;
+
             const countSpan = document.getElementById('count');
             if (countSpan) countSpan.innerText = cartCount;
 
@@ -138,7 +103,6 @@
                 p.stock--;
                 cart.push({ name: p.name, price: p.price, image: p.image });
                 localStorage.setItem('cart', JSON.stringify(cart));
-                cartCount++;
                 render();
                 alert(`${p.name}をカートに追加！`);
             }
@@ -152,7 +116,9 @@
             }
         }
 
+        // ページ読み込み時 + 定期更新（カート変更検知）
         render();
+        setInterval(render, 1000); // 1秒ごとにチェック
     </script>
 </body>
 </html>
