@@ -12,7 +12,8 @@
         .checkout-btn { background: #4caf50; color: white; border: none; width: 100%; padding: 15px; border-radius: 25px; font-size: 1.2em; cursor: pointer; }
         .back { text-align: center; margin-top: 20px; }
         .back a { color: #007bff; text-decoration: none; }
-        form { display: none; } /* 隠しフォーム */
+        .email-input { margin: 15px 0; }
+        .email-input input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1em; }
     </style>
 </head>
 <body>
@@ -20,15 +21,14 @@
     <div class="container">
         <div id="items"></div>
         <div class="total">合計: ¥<span id="total">0</span></div>
-        <button class="checkout-btn" onclick="showForm()">注文を確定する</button>
-        
-        <!-- 隠しフォーム (Formspreeでメール送信) -->
-        <form id="orderForm" action="https://formspree.io/f/YOUR_ENDPOINT_HERE" method="POST"> <!-- Formspree URLに置き換え -->
-            <input type="hidden" name="注文内容" id="orderData">
-            <input type="email" name="注文者メール" placeholder="メールアドレス (通知用)" required>
-            <button type="submit">送信</button>
-        </form>
-        
+
+        <!-- お客様メール入力欄 -->
+        <div class="email-input">
+            <label>お客様メール（確認メール送信）:</label>
+            <input type="email" id="customerEmail" placeholder="example@gmail.com" required>
+        </div>
+
+        <button class="checkout-btn" onclick="confirmOrder()">注文を確定する</button>
         <div class="back"><a href="/" target="_blank">メニューに戻る</a></div>
     </div>
 
@@ -48,20 +48,39 @@
                 total += item.price;
             });
         }
-
         document.getElementById('total').innerText = total;
 
-        function showForm() {
-            if (cart.length > 0) {
-                const orderData = cart.map(item => `${item.name} x1 (¥${item.price})`).join('\n');
-                document.getElementById('orderData').value = `合計¥${total}\n${orderData}`;
-                document.getElementById('orderForm').style.display = 'block';
-                document.getElementById('orderForm').scrollIntoView();
-            }
-        }
-
+        // ここに君の関数を追加！
         function confirmOrder() {
-            alert(`注文確定！合計¥${total}\n店舗で「ネット注文」とお伝えください。`);
+            const customerEmail = document.getElementById('customerEmail').value;
+            if (!customerEmail) {
+                alert('お客様メールを入力してください！');
+                return;
+            }
+            const orderText = cart.map(item => `${item.name} x1 (¥${item.price})`).join('\n');
+            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+
+            // 1. 君（店主）に送信
+            fetch('https://formspree.io/f/xpwkzgnz', {  // 君のURL
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    '注文内容': `${orderText}\n合計: ¥${totalPrice}`,
+                    'お客様メール': customerEmail
+                })
+            });
+
+            // 2. 客に送信
+            fetch('https://formspree.io/f/xyz789', {  // 客のURL（あとで作る）
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    '件名': '【田舎コンビニ】ご注文ありがとうございます！',
+                    'メッセージ': `以下のご注文を承りました。\n\n${orderText}\n\n合計: ¥${totalPrice}\n\n店舗で「ネット注文」とお伝えください。\n準備でき次第、声かけします♪\n\nぼっち救済隊より`
+                })
+            });
+
+            alert('注文確定！\nお客様にも確認メールを送信しました。');
             localStorage.removeItem('cart');
             window.location.href = '/';
         }
