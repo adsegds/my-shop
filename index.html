@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+
+
+<!-- head内に追加 -->
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
+
+<script>
+    // Firebase config (君のプロジェクトのやつに置き換え)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        // ... 他のconfig
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+</script>
+
+<!-- ヘッダーにログイン部分追加 -->
+<header>
+    <h1>ローソン 和泉町店</h1>
+    <div id="auth-status">
+        <button onclick="login()">ログイン</button>
+        <button onclick="register()">新規登録</button>
+        <div id="user-info"></div>
+    </div>
+</header>
+
+<script>
+    // ログイン状態監視
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('user-info').innerHTML = `ようこそ ${user.email}`;
+            // ログイン後、商品表示
+        } else {
+            document.getElementById('user-info').innerHTML = 'ログインして注文を！';
+        }
+    });
+
+    function login() {
+        const email = prompt('メール');
+        const password = prompt('パスワード');
+        auth.signInWithEmailAndPassword(email, password).catch(err => alert('エラー: ' + err.message));
+    }
+
+    function register() {
+        const email = prompt('メール');
+        const password = prompt('パスワード');
+        auth.createUserWithEmailAndPassword(email, password).catch(err => alert('エラー: ' + err.message));
+    }
+</script>
+
+
+
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店 デリバリー</title>
