@@ -3,80 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>コンビニアプリ</title>
+    <title>ローソン 和泉町店 デリバリー</title>
     <style>
-        body { margin: 0; font-family: sans-serif; background: #fff; color: #333; font-size: 0.9em; }
-        .header { background: #006633; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; }
-        .header span { background: #fff; color: #006633; padding: 3px 8px; border-radius: 15px; margin: 0 5px; }
-        .header .icon { font-size: 1.2em; }
-        .points-bar { background: #fff; padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
-        .points-bar .stars { font-size: 2em; color: #ffd700; }
-        .points-bar .exchange { background: #006633; color: #fff; padding: 5px 15px; border-radius: 20px; margin: 5px; font-size: 0.8em; display: inline-block; }
-        .banner { background: #000; color: #fff; padding: 20px; text-align: center; font-size: 1.2em; }
-        .banner button { background: #fff; color: #000; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; border: none; }
-        .whats-new { padding: 10px; }
-        .new-item { background: #ff0000; color: #fff; padding: 20px; text-align: center; font-size: 1.1em; margin-bottom: 10px; border-radius: 8px; }
-        .new-item button { background: #fff; color: #ff0000; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; border: none; }
-        .bottom-menu { position: fixed; bottom: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; font-size: 0.8em; }
-        .bottom-menu a { color: #006633; text-decoration: none; text-align: center; }
-        .bottom-menu .active { color: #000; font-weight: bold; }
-        .bottom-menu i { display: block; font-size: 1.2em; }
+        body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
+        .search-bar { padding: 10px; }
+        .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
+        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; }
+        .category-arrow { float: right; color: #666; font-size: 0.9em; }
+        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; }
+        .slider-container::-webkit-scrollbar { display: none; }
+        .slider { display: inline-flex; gap: 12px; }
+        .product-card { background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .product-img { width: 100%; height: 100px; object-fit: cover; }
+        .product-info { padding: 8px; }
+        .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
+        .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
+        .add-btn { background: #007bff; color: white; border: none; width: 100%; padding: 6px; border-radius: 6px; font-size: 0.8em; margin-top: 5px; cursor: pointer; }
+        .add-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 60px; }
+        .cart button { background: #4caf50; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; }
     </style>
 </head>
 <body>
-    <!-- 上部ヘッダー -->
-    <div class="header">
-        <span>0 eTicket</span>
-        <span>★ Inbox</span>
-        <span class="icon">⚙︎</span>
+    <header><h1>ローソン 和泉町店</h1></header>
+
+    <div class="search-bar">
+        <input type="text" placeholder="商品を検索...">
     </div>
 
-    <!-- ポイントバー -->
-    <div class="points-bar">
-        <span class="stars">0★</span>
-        <div>
-            <button class="exchange">スターリワードに交換</button>
-            <button class="exchange">もっと見る</button>
-        </div>
-    </div>
+    <script>
+        const categories = [
+            { id: 1, name: "ペットボトル飲料", link: "#" }, // リンク追加で別ページ
+            { id: 2, name: "お菓子", link: "#" },
+            { id: 3, name: "からあげくん・揚げ物", link: "#" },
+            // カテゴリー増やし放題！ ここに追加
+        ];
 
-    <!-- Mobile Order & Pay バナー -->
-    <div class="banner">
-        レジに並ばず、お店で受け取り
-        <br>
-        Mobile Order & Pay
-        <button>オーダーする</button>
-    </div>
+        const products = [
+            { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
+            { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
+            { id: 3, cat: 1, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 15 },
+            { id: 4, cat: 2, name: "プリングルズ<サワークリーム&オニオン> (26g)", price: 398, image: "https://i.imgur.com/pringles.jpg", stock: 8 },
+            { id: 5, cat: 2, name: "金のとりから からあげくん", price: 88, image: "https://i.imgur.com/torikara.jpg", stock: 12 },
+            { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 },
+            { id: 7, cat: 3, name: "からあげくんレギュラー (5個)", price: 180, image: "https://i.imgur.com/karaage1.jpg", stock: 10 },
+            { id: 8, cat: 3, name: "バスケットポテト (1個)", price: 188, image: "https://i.imgur.com/potato.jpg", stock: 5 },
+            { id: 9, cat: 3, name: "Lチキんドッグ (1個)", price: 175, image: "https://i.imgur.com/chicken.jpg", stock: 7 },
+            // 商品増やし放題！ ここに追加
+        ];
 
-    <!-- What's new セクション -->
-    <div class="whats-new">
-        <div class="new-item">
-            What's new<br>11.14(Fri) START
-            <br>
-            あん<br>プチ<br>ティー
-            <button>もっと見る</button>
-        </div>
-        <div class="new-item" style="background: #008000;">
-            What's new<br>Seasonal Favorites
-            <br>
-            ジンジャーブレッドラテなど
-            <button>もっと見る</button>
-        </div>
-        <div class="new-item" style="background: #ff0000;">
-            What's new<br>Online Store #StarbucksAtHome
-            <br>
-            タンブラーなど
-            <button>もっと見る</button>
-        </div>
-    </div>
+        let cartCount = 0;
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    <!-- Bottom menu -->
-    <div class="bottom-menu">
-        <a href="#" class="active"><i>★</i>Home</a>
-        <a href="#"><i>💳</i>Pay</a>
-        <a href="#"><i>🏠</i>Stores</a>
-        <a href="#"><i>📦</i>Order</a>
-        <a href="#"><i>🎁</i>Gift</a>
-    </div>
+        // カテゴリー表示
+        categories.forEach(cat => {
+            const div = document.createElement('div');
+            div.className = 'category';
+            div.innerHTML = `${cat.name} <span class="category-arrow"> > </span>`;
+            div.onclick = () => window.location.href = cat.link;
+            document.body.insertBefore(div, document.body.lastChild);
+
+            const sliderContainer = document.createElement('div');
+            sliderContainer.className = 'slider-container';
+            const slider = document.createElement('div');
+            slider.className = 'slider';
+            slider.id = `slider${cat.id}`;
+            sliderContainer.appendChild(slider);
+            document.body.insertBefore(sliderContainer, document.body.lastChild);
+        });
+
+        function render() {
+            categories.forEach(cat => {
+                const slider = document.getElementById(`slider${cat.id}`);
+                slider.innerHTML = '';
+                products.filter(p => p.cat === cat.id).forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img class="product-img" src="${p.image}" alt="${p.name}">
+                        <div class="product-info">
+                            <p class="product-name">${p.name}</p>
+                            <p class="product-price">¥${p.price}</p>
+                            <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>
+                                ${p.stock > 0 ? '+' : '売り切れ'}
+                            </button>
+                        </div>
+                    `;
+                    slider.appendChild(card);
+                });
+            });
+            document.getElementById('count').innerText = cartCount;
+        }
+
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            if (p.stock > 0) {
+                p.stock--;
+                cart.push({ name: p.name, price: p.price });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                cartCount++;
+                render();
+                alert(`${p.name}をカートに追加！`);
+            }
+        }
+
+        function checkout() {
+            if (cartCount > 0) {
+                window.open('cart.html', '_blank');
+            } else {
+                alert('カートが空です！');
+            }
+        }
+
+        render();
+    </script>
 </body>
 </html>
