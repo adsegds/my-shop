@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ペットボトル飲料 - ローソン 和泉町店</title>
+    <title>ペットボトル飲料</title>
     <style>
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
-        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; position: relative; }
         .search-bar { padding: 10px; }
         .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
         .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px; scrollbar-width: none; }
         .category-slider { display: inline-flex; gap: 15px; }
         .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
-        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
-        .category-arrow { float: right; color: #666; font-size: 0.9em; }
-        /* 縦グリッド一覧 */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 0 10px 70px; } /* ← 余白で隠れ回避 */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 10px 10px 70px 10px; }
         .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
         .product-info { padding: 8px; }
@@ -23,8 +20,22 @@
         .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
         .add-btn { background: #007bff; color: white; border: none; width: 100%; padding: 6px; border-radius: 6px; font-size: 0.8em; margin-top: 5px; cursor: pointer; }
         .add-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 50px; }
-        .cart button { background: #4caf50; color: white; border: none; padding: 8px 30px; border-radius: 25px; font-size: 1em; cursor: pointer; }
+        /* 右上固定注文ボタン（初期非表示） */
+        .checkout-fixed { 
+            position: fixed; 
+            top: 15px; 
+            right: 15px; 
+            background: #4caf50; 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            border-radius: 20px; 
+            font-size: 0.9em; 
+            cursor: pointer; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            z-index: 999; 
+            display: none; /* ← 初期非表示 */
+        }
     </style>
 </head>
 <body>
@@ -48,10 +59,8 @@
     <!-- 縦グリッド一覧 -->
     <div class="product-grid" id="grid"></div>
 
-    <!-- 注文バー -->
-    <div class="cart">
-        <button onclick="checkout()">注文する (<span id="count">0</span>個)</button>
-    </div>
+    <!-- 右上固定注文ボタン -->
+    <button class="checkout-fixed" onclick="checkout()">注文する (<span id="count">0</span>個)</button>
 
     <script>
         const products = [
@@ -61,7 +70,6 @@
             { id: 4, name: "ポカリスウェット (900ml)", price: 258, image: "https://i.imgur.com/pocari.jpg", stock: 8 },
             { id: 5, name: "アクエリアス (950ml)", price: 258, image: "https://i.imgur.com/aquarius.jpg", stock: 12 },
             { id: 6, name: "コカ・コーラ (410ml)", price: 418, image: "https://i.imgur.com/coke410.jpg", stock: 0 }
-            // 増やし放題！
         ];
 
         let cartCount = 0;
@@ -85,7 +93,14 @@
                 `;
                 grid.appendChild(card);
             });
-            document.getElementById('count').innerText = cartCount;
+
+            // 注文ボタン表示制御
+            const checkoutBtn = document.querySelector('.checkout-fixed');
+            if (cartCount > 0) {
+                checkoutBtn.style.display = 'block';
+            } else {
+                checkoutBtn.style.display = 'none';
+            }
         }
 
         function addToCart(id) {
