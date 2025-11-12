@@ -2,178 +2,88 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ローソン 和泉町店 デリバリー</title>
+    <title>カート - 田舎コンビニ</title>
     <style>
-        body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
-        header { background: #032f4b; color: white; padding: 15px; text-align: center; position: relative; }
-        .auth-area { position: absolute; right: 15px; top: 15px; }
-        .auth-area button { background: #fff; color: #032f4b; border: none; padding: 8px 15px; border-radius: 20px; margin: 0 5px; font-size: 0.9em; }
-        .search-bar { padding: 10px; }
-        .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
-        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; }
-        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 15px; scrollbar-width: none; }
-        .slider-container::-webkit-scrollbar { display: none; }
-        .slider { display: inline-flex; gap: 12px; }
-        .product-grid { padding-bottom: 60px; }
-        .product-card { background: white; border-radius: 12px; width: 160px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .product-img { width: 100%; height: 120px; object-fit: cover; }
-        .product-info { padding: 10px; }
-        .product-name { font-size: 0.9em; margin: 0 0 5px; white-space: normal; line-height: 1.3; }
-        .product-price { font-weight: bold; color: #e91e63; font-size: 1.1em; }
-        .add-btn { background: #007bff; color: white; border: none; width: 100%; padding: 8px; border-radius: 8px; font-size: 0.9em; margin-top: 8px; cursor: pointer; }
-        .add-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .add-btn:hover:not(:disabled) { background: #0056b3; }
-        .cart { position: fixed; bottom: 0; width: 100%; background: white; padding: 12px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); text-align: center; height: 60px; }
-        .cart button { background: #4caf50; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1em; cursor: pointer; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
-        .modal-content { background: white; width: 90%; max-width: 400px; margin: 100px auto; padding: 20px; border-radius: 12px; }
-        .modal-content input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
-        .modal-content button { width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 8px; cursor: pointer; }
-        .modal-content .submit { background: #007bff; color: white; }
-        .modal-content .cancel { background: #ccc; color: #333; }
+        body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .total { font-size: 1.3em; font-weight: bold; text-align: right; margin: 20px 0; }
+        .checkout-btn { background: #4caf50; color: white; border: none; width: 100%; padding: 15px; border-radius: 25px; font-size: 1.2em; cursor: pointer; }
+        .back { text-align: center; margin-top: 20px; }
+        .back a { color: #007bff; text-decoration: none; }
+        .email-input { margin: 15px 0; }
+        .email-input input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 1em; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>ローソン 和泉町店</h1>
-        <div class="auth-area">
-            <button onclick="showModal('login')">ログイン</button>
-            <button onclick="showModal('register')">会員登録</button>
-            <span id="user-info"></span>
+    <header><h1>カート</h1></header>
+    <div class="container">
+        <div id="items"></div>
+        <div class="total">合計: ¥<span id="total">0</span></div>
+
+        <!-- お客様メール入力欄 -->
+        <div class="email-input">
+            <label>お客様メール（確認メール送信）:</label>
+            <input type="email" id="customerEmail" placeholder="example@gmail.com" required>
         </div>
-    </header>
 
-    <div class="search-bar">
-        <input type="text" placeholder="商品を検索..." oninput="search(this.value)">
+        <button class="checkout-btn" onclick="confirmOrder()">注文を確定する</button>
+        <div class="back"><a href="/" target="_blank">メニューに戻る</a></div>
     </div>
-
-    <div class="category">Uber One メンバー限定 フライドポテト</div>
-    <div class="slider-container"><div class="slider" id="slider1"></div></div>
-
-    <div class="category">ペットボトル飲料</div>
-    <div class="slider-container"><div class="slider" id="slider2"></div></div>
-
-    <div class="cart">
-        <button onclick="checkout()">注文する (<span id="count">0</span>個)</button>
-    </div>
-
-    <!-- モーダル -->
-    <div id="auth-modal" class="modal">
-        <div class="modal-content">
-            <h2 id="modal-title">ログイン</h2>
-            <input type="email" id="auth-email" placeholder="メールアドレス">
-            <input type="password" id="auth-pass" placeholder="パスワード">
-            <button class="submit" onclick="authAction()">実行</button>
-            <button class="cancel" onclick="closeModal()">キャンセル</button>
-        </div>
-    </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
-        // 君のFirebase configをここに貼り付け！
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            // ... 他の行
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const itemsDiv = document.getElementById('items');
+        let total = 0;
 
-        let isLogin = true;
-
-        // ログイン状態監視
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('user-info').innerText = `ようこそ ${user.email}`;
-            } else {
-                document.getElementById('user-info').innerText = '';
-            }
-        });
-
-        function showModal(type) {
-            isLogin = type === 'login';
-            document.getElementById('modal-title').innerText = isLogin ? 'ログイン' : '会員登録';
-            document.getElementById('auth-modal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('auth-modal').style.display = 'none';
-        }
-
-        function authAction() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            if (isLogin) {
-                auth.signInWithEmailAndPassword(email, pass).catch(err => alert(err.message));
-            } else {
-                auth.createUserWithEmailAndPassword(email, pass).catch(err => alert(err.message));
-            }
-        }
-
-        // 以下は君の既存コード（商品、検索、カートなど）
-        const products = [
-            { id: 1, name: "フライトポテト [BOX]", price: 680, image: "https://i.imgur.com/fries1.jpg", stock: 10, cat: 1 },
-            { id: 2, name: "フライトポテト×からあげくん", price: 720, image: "https://i.imgur.com/fries2.jpg", stock: 5, cat: 1 },
-            { id: 3, name: "フライトポテト×からあげくんレギュラー", price: 720, image: "https://i.imgur.com/fries3.jpg", stock: 3, cat: 1 },
-            { id: 4, name: "クラフトボス甘くないイタリアーノ", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 15, cat: 2 },
-            { id: 5, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 20, cat: 2 },
-            { id: 6, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 0, cat: 2 }
-        ];
-
-        let cartCount = 0;
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-        function render() {
-            ['slider1', 'slider2'].forEach((id, i) => {
-                const slider = document.getElementById(id);
-                slider.innerHTML = '';
-                products.filter(p => p.cat === i + 1).forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <img class="product-img" src="${p.image}" alt="${p.name}">
-                        <div class="product-info">
-                            <p class="product-name">${p.name}</p>
-                            <p class="product-price">¥${p.price}</p>
-                            <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>
-                                ${p.stock > 0 ? '+' : '売り切れ'}
-                            </button>
-                        </div>
-                    `;
-                    slider.appendChild(card);
-                });
+        if (cart.length === 0) {
+            itemsDiv.innerHTML = '<p style="text-align:center;color:#666;">カートは空です</p>';
+        } else {
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `<span>${item.name}</span><span>¥${item.price}</span>`;
+                itemsDiv.appendChild(div);
+                total += item.price;
             });
-            document.getElementById('count').innerText = cartCount;
         }
+        document.getElementById('total').innerText = total;
 
-        function addToCart(id) {
-            const p = products.find(x => x.id === id);
-            if (p.stock > 0) {
-                p.stock--;
-                cart.push({ name: p.name, price: p.price });
-                localStorage.setItem('cart', JSON.stringify(cart));
-                cartCount++;
-                render();
-                alert(`${p.name}をカートに追加！`);
+        // ここに君の関数を追加！
+        function confirmOrder() {
+            const customerEmail = document.getElementById('customerEmail').value;
+            if (!customerEmail) {
+                alert('お客様メールを入力してください！');
+                return;
             }
+            const orderText = cart.map(item => `${item.name} x1 (¥${item.price})`).join('\n');
+            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+
+            // 1. 君（店主）に送信
+            fetch('https://formspree.io/f/xpwkzgnz', {  // 君のURL
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    '注文内容': `${orderText}\n合計: ¥${totalPrice}`,
+                    'お客様メール': customerEmail
+                })
+            });
+
+            // 2. 客に送信
+            fetch('https://formspree.io/f/xyz789', {  // 客のURL（あとで作る）
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    '件名': '【田舎コンビニ】ご注文ありがとうございます！',
+                    'メッセージ': `以下のご注文を承りました。\n\n${orderText}\n\n合計: ¥${totalPrice}\n\n店舗で「ネット注文」とお伝えください。\n準備でき次第、声かけします♪\n\nぼっち救済隊より`
+                })
+            });
+
+            alert('注文確定！\nお客様にも確認メールを送信しました。');
+            localStorage.removeItem('cart');
+            window.location.href = '/';
         }
-
-        function checkout() {
-            if (cartCount > 0) {
-                window.open('cart.html', '_blank');
-            } else {
-                alert('カートが空です！');
-            }
-        }
-
-        function search(q) { render(); }
-
-        render();
     </script>
 </body>
 </html>
