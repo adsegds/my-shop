@@ -2,13 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <script src="products.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店</title>
+    <script src="products.js"></script>
     <style>
-        /* 省略（前と同じ） */
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
-        header { background: #032f4b; color: white; padding: 15px; text-align: center; position: relative; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
         .search-bar { padding: 10px; }
         .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
         .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px; scrollbar-width: none; }
@@ -23,65 +22,18 @@
         .product-info { padding: 8px; }
         .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
         .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
-        .quantity-controls { 
-            position: absolute; 
-            right: 8px; 
-            bottom: 8px; 
-            background: white; 
-            border-radius: 20px; 
-            display: flex; 
-            align-items: center; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-            overflow: hidden; 
-        }
-        .quantity-btn { 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            width: 28px; 
-            height: 28px; 
-            font-size: 1.2em; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
+        .quantity-controls { position: absolute; right: 8px; bottom: 8px; background: white; border-radius: 20px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow: hidden; }
+        .quantity-btn { background: #007bff; color: white; border: none; width: 28px; height: 28px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .quantity-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .quantity-count { 
-            width: 30px; 
-            text-align: center; 
-            font-weight: bold; 
-            font-size: 1em; 
-        }
-        .checkout-fixed { 
-            position: fixed; 
-            top: 70px; 
-            right: 15px; 
-            background: #4caf50; 
-            color: white; 
-            border: none; 
-            padding: 14px 20px 14px 14px; 
-            border-radius: 28px; 
-            font-size: 1.3em; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
-            z-index: 999; 
-            display: none; 
-            display: flex; 
-            align-items: center; 
-            gap: 6px; 
-        }
+        .quantity-count { width: 30px; text-align: center; font-weight: bold; font-size: 1em; }
+        .checkout-fixed { position: fixed; top: 70px; right: 15px; background: #4caf50; color: white; border: none; padding: 14px 20px 14px 14px; border-radius: 28px; font-size: 1.3em; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 999; display: none; display: flex; align-items: center; gap: 6px; }
         .cart-icon-svg { width: 24px; height: 24px; fill: white; }
         #count { font-size: 1em; font-weight: bold; }
     </style>
 </head>
 <body>
     <header><h1>ローソン 和泉町店</h1></header>
-
-    <div class="search-bar">
-        <input type="text" placeholder="商品を検索...">
-    </div>
-
+    <div class="search-bar"><input type="text" placeholder="商品を検索..."></div>
     <div class="category-slider-container">
         <div class="category-slider">
             <a href="drinks.html" class="category-item">ペットボトル飲料</a>
@@ -90,10 +42,8 @@
             <a href="bento.html" class="category-item">お弁当</a>
         </div>
     </div>
-
     <div class="category" onclick="location.href='drinks.html'">ペットボトル飲料 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider1"></div></div>
-
     <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
@@ -105,15 +55,6 @@
     </button>
 
     <script>
-        const products = [
-            { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
-            { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
-            { id: 3, cat: 1, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 15 },
-            { id: 4, cat: 2, name: "プリングルズ<サワークリーム&オニオン> (26g)", price: 398, image: "https://i.imgur.com/pringles.jpg", stock: 8 },
-            { id: 5, cat: 2, name: "金のとりから からあげくん", price: 88, image: "https://i.imgur.com/torikara.jpg", stock: 12 },
-            { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 }
-        ];
-
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let cartCount = 0;
 
@@ -121,13 +62,12 @@
             ['slider1', 'slider2'].forEach((id, i) => {
                 const slider = document.getElementById(id);
                 slider.innerHTML = '';
-                products.filter(p => p.cat === i + 1).forEach(p => {
-                    const inCart = cart.filter(item => item.id === p.id)[0] || { qty: 0 };
+                getProductsByCat(i + 1).forEach(p => {
+                    const inCart = cart.find(item => item.id === p.id) || { qty: 0 };
                     const card = document.createElement('div');
                     card.className = 'product-card';
-                    const imgSrc = p.image || 'https://via.placeholder.com/100?text=No+Image';
                     card.innerHTML = `
-                        <img class="product-img" src="${imgSrc}" alt="${p.name}">
+                        <img class="product-img" src="${p.image}" alt="${p.name}">
                         <div class="quantity-controls">
                             <button class="quantity-btn" onclick="updateQuantity(${p.id}, -1)" ${inCart.qty === 0 ? 'disabled' : ''}>-</button>
                             <span class="quantity-count">${inCart.qty}</span>
@@ -141,14 +81,12 @@
                     slider.appendChild(card);
                 });
             });
-
             updateCartUI();
         }
 
         function updateQuantity(id, change) {
-            const p = products.find(x => x.id === id);
+            const p = PRODUCTS.find(x => x.id === id);
             const cartItem = cart.find(item => item.id === id) || { id: p.id, name: p.name, price: p.price, image: p.image, qty: 0 };
-
             if (change > 0 && p.stock > 0) {
                 p.stock--;
                 cartItem.qty++;
@@ -156,13 +94,13 @@
                 p.stock++;
                 cartItem.qty--;
             }
-
             if (cartItem.qty === 0) {
                 cart = cart.filter(item => item.id !== id);
-            } else if (!cart.includes(cartItem)) {
+            } else if (!cart.find(item => item.id === id)) {
                 cart.push(cartItem);
+            } else {
+                cart = cart.map(item => item.id === id ? cartItem : item);
             }
-
             localStorage.setItem('cart', JSON.stringify(cart));
             render();
         }
@@ -170,10 +108,8 @@
         function updateCartUI() {
             cart = JSON.parse(localStorage.getItem('cart') || '[]');
             cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
-
             const countSpan = document.getElementById('count');
             if (countSpan) countSpan.innerText = cartCount;
-
             const checkoutBtn = document.querySelector('.checkout-fixed');
             if (checkoutBtn) {
                 checkoutBtn.style.display = cartCount > 0 ? 'flex' : 'none';
@@ -189,10 +125,7 @@
         }
 
         render();
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'cart') render();
-        });
+        window.addEventListener('storage', (e) => { if (e.key === 'cart') render(); });
         window.addEventListener('focus', render);
     </script>
 </body>
