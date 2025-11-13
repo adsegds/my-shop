@@ -5,59 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#032f4b">
+    <script src="products.js"></script>
 </head>
 <body>
     <header>ローソン 和泉町店</header>
-
-    <!-- ここに検索バー！ -->
-    <div class="search-bar">
-        <input type="text" placeholder="商品を検索...">
-    </div>
-
+    <div class="search-bar"><input type="text" placeholder="商品を検索..."></div>
     <div class="category-tabs">
         <div class="tab-list">
-            <a href="#" class="tab-item active" data-cat="1">ペットボトル飲料</a>
-            <a href="#" class="tab-item" data-cat="2">お菓子</a>
-            <a href="#" class="tab-item" data-cat="3">からあげくん</a>
-            <a href="#" class="tab-item" data-cat="4">お弁当</a>
+            <a href="drinks.html" class="tab-item">ペットボトル飲料</a>
+            <a href="snacks.html" class="tab-item">お菓子</a>
+            <a href="fried.html" class="tab-item">からあげくん・揚げ物</a>
+            <a href="bento.html" class="tab-item">お弁当</a>
         </div>
     </div>
 
-    <!-- セクション -->
-    <section class="section" data-cat="1">
-        <div class="section-title">ペットボトル飲料 <a href="#">すべて表示 →</a></div>
-        <div class="product-grid" id="cat-1-grid"></div>
-    </section>
-    <section class="section" data-cat="2" style="display:none;">
-        <div class="section-title">お菓子 <a href="#">すべて表示 →</a></div>
-        <div class="product-grid" id="cat-2-grid"></div>
-    </section>
-    <section class="section" data-cat="3" style="display:none;">
-        <div class="section-title">からあげくん <a href="#">すべて表示 →</a></div>
-        <div class="product-grid" id="cat-3-grid"></div>
-    </section>
-    <section class="section" data-cat="4" style="display:none;">
-        <div class="section-title">お弁当 <a href="#">すべて表示 →</a></div>
-        <div class="product-grid" id="cat-4-grid"></div>
-    </section>
+    <div class="section">
+        <div class="section-title">ペットボトル飲料 <a href="drinks.html">すべて表示 →</a></div>
+        <div class="product-grid" id="drinks-grid"></div>
+    </div>
 
-    <!-- 注文ボタン -->
-    <button class="checkout-btn" onclick="checkout()">
-        <svg class="cart-icon" viewBox="0 0 24 24">
-            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-        </svg>
-        注文する (<span id="cart-count">0</span>)
+    <div class="section">
+        <div class="section-title">お菓子 <a href="snacks.html">すべて表示 →</a></div>
+        <div class="product-grid" id="snacks-grid"></div>
+    </div>
+
+    <button class="cart-btn" onclick="checkout()">
+        <svg class="cart-icon" viewBox="0 0 24 24"><path fill="white" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+        カートを見る・<span id="cart-count">0</span>
     </button>
 
-    <!-- JS -->
-    <script src="products.js"></script>
-    <script src="script.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        function render() {
+            renderSection('drinks-grid', 1);
+            renderSection('snacks-grid', 2);
+            updateCartUI();
         }
+
+        function renderSection(gridId, cat) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = '';
+            getProductsByCat(cat).forEach(p => {
+                const inCart = cart.find(i => i.id === p.id)?.qty || 0;
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img class="product-img" src="${p.image}" alt="${p.name}">
+                    <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>+</button>
+                    <div class="product-price">¥${p.price}</div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="sponsor">©${p.name.split(' ')[0]}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addToCart(id) {
+            const p = PRODUCTS.find(x => x.id === id);
+            if (p.stock <= 0) return;
+            p.stock--;
+            const item = cart.find(i => i.id === id) || { id, qty: 0 };
+            item.qty++;
+            if (!cart.find(i => i.id === id)) cart.push(item);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            render();
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((s, i) => s + i.qty, 0);
+            document.getElementById('cart-count').textContent = count;
+            document.querySelector('.cart-btn').style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        function checkout() {
+            if (cart.length > 0) window.open('cart.html', '_blank');
+            else alert('カートが空です！');
+        }
+
+        render();
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                render();
+            }
+        });
     </script>
 </body>
 </html>
