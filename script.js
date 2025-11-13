@@ -1,13 +1,15 @@
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
 window.onload = () => {
-    render();
+    renderAllSections();
+    activateTab(1); // 初期表示
 };
 
-function renderSection(gridId, cat) {
-    const grid = document.getElementById(gridId);
+function renderSection(cat) {
+    const grid = document.getElementById(`cat-${cat}-grid`);
     grid.innerHTML = '';
-    PRODUCTS.filter(p => p.category === cat).forEach(p => {
+    const products = PRODUCTS.filter(p => p.category === cat);
+    products.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
@@ -21,15 +23,34 @@ function renderSection(gridId, cat) {
     });
 }
 
-function render() {
-    renderSection('drinks-grid', 1);
-    renderSection('snacks-grid', 2);
-    updateCartUI();
+function renderAllSections() {
+    [1, 2, 3, 4].forEach(cat => renderSection(cat));
 }
 
+function activateTab(cat) {
+    // タブ切り替え
+    document.querySelectorAll('.tab-item').forEach(tab => {
+        tab.classList.toggle('active', parseInt(tab.dataset.cat) === cat);
+    });
+    // セクション切り替え
+    document.querySelectorAll('.section').forEach(sec => {
+        sec.classList.toggle('active', parseInt(sec.dataset.cat) === cat);
+    });
+}
+
+// タブクリックで本格切り替え！
+document.querySelectorAll('.tab-item').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cat = parseInt(tab.dataset.cat);
+        activateTab(cat);
+    });
+});
+
+// カート系関数
 function addToCart(id) {
     const p = PRODUCTS.find(x => x.id === id);
-    if (p.stock > 0) {
+    if (p && p.stock > 0) {
         p.stock--;
         let item = cart.find(i => i.id === id);
         if (!item) {
@@ -38,12 +59,14 @@ function addToCart(id) {
         }
         item.qty++;
         localStorage.setItem('cart', JSON.stringify(cart));
-        render();
+        const activeCat = document.querySelector('.tab-item.active').dataset.cat;
+        renderSection(parseInt(activeCat)); // 現在表示中のカテゴリだけ更新
+        updateCartUI();
     }
 }
 
 function updateCartUI() {
-    const count = cart.reduce((s, i) => s + i.qty, 0, 0);
+    const count = cart.reduce((s, i) => s + i.qty, 0);
     document.getElementById('cart-count').textContent = count;
     document.querySelector('.checkout-btn').classList.toggle('show', count > 0);
 }
