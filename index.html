@@ -31,7 +31,7 @@
             background: #4caf50; 
             color: white; 
             border: none; 
-            padding: 14px 25px; 
+            padding: 14px 20px 14px 14px; 
             border-radius: 28px; 
             font-size: 1.3em; 
             cursor: pointer; 
@@ -40,9 +40,9 @@
             display: none; 
             display: flex; 
             align-items: center; 
-            gap: 8px; 
+            gap: 6px; 
         }
-        .cart-icon { font-size: 1.2em; }
+        .cart-icon-svg { width: 24px; height: 24px; fill: white; }
     </style>
 </head>
 <body>
@@ -68,7 +68,10 @@
     <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
     <button class="checkout-fixed" onclick="checkout()">
-        <span class="cart-icon">Cart</span> 注文する (<span id="count">0</span>個)
+        <svg class="cart-icon-svg" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="white" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        注文する (<span id="count">0</span>個)
     </button>
 
     <script>
