@@ -1,5 +1,11 @@
 // script.js
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+let cart = [];
+
+// エラーチェック
+if (typeof PRODUCTS === 'undefined') {
+    document.body.innerHTML = '<h1 style="text-align:center;margin:50px;color:red;">products.js が読み込まれていません！</h1>';
+    throw new Error('PRODUCTS is not defined');
+}
 
 window.onload = () => {
     cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -12,9 +18,9 @@ function getProductsByCat(cat) {
 
 function renderSection(gridId, cat) {
     const grid = document.getElementById(gridId);
+    if (!grid) return;
     grid.innerHTML = '';
     getProductsByCat(cat).slice(0, 6).forEach(p => {
-        const inCart = cart.find(i => i.id === p.id)?.qty || 0;
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
@@ -56,7 +62,7 @@ function updateCartUI() {
     const count = cart.reduce((s, i) => s + i.qty, 0);
     const btn = document.querySelector('.checkout-btn');
     const countEl = document.getElementById('cart-count');
-    countEl.textContent = count;
+    if (countEl) countEl.textContent = count;
 
     if (count > 0) {
         btn.classList.add('show');
@@ -70,13 +76,11 @@ function checkout() {
         alert('カートが空です！');
         return;
     }
-    // cart.html に遷移（別タブで開く）
-    const win = window.open('cart.html', '_blank');
-    if (win) win.focus();
-    else alert('ポップアップがブロックされました。許可してください。');
+    alert('注文画面に移動します！（cart.html）');
+    // window.open('cart.html', '_blank');
 }
 
-// タブ切り替え時も更新
+// タブ戻り時も更新
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
         cart = JSON.parse(localStorage.getItem('cart') || '[]');
