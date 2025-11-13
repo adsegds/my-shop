@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店</title>
     <style>
+        /* 省略（前と同じ） */
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
         header { background: #032f4b; color: white; padding: 15px; text-align: center; position: relative; }
         .search-bar { padding: 10px; }
@@ -18,11 +19,39 @@
         .slider { display: inline-flex; gap: 12px; }
         .product-card { position: relative; background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
-        .add-btn { position: absolute; right: 8px; bottom: 8px; background: #007bff; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2em; line-height: 1; padding: 0; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
-        .add-btn:disabled { background: #ccc; cursor: not-allowed; }
         .product-info { padding: 8px; }
         .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
         .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
+        .quantity-controls { 
+            position: absolute; 
+            right: 8px; 
+            bottom: 8px; 
+            background: white; 
+            border-radius: 20px; 
+            display: flex; 
+            align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            overflow: hidden; 
+        }
+        .quantity-btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            width: 28px; 
+            height: 28px; 
+            font-size: 1.2em; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .quantity-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .quantity-count { 
+            width: 30px; 
+            text-align: center; 
+            font-weight: bold; 
+            font-size: 1em; 
+        }
         .checkout-fixed { 
             position: fixed; 
             top: 70px; 
@@ -42,10 +71,7 @@
             gap: 6px; 
         }
         .cart-icon-svg { width: 24px; height: 24px; fill: white; }
-        #count { 
-            font-size: 1em; 
-            font-weight: bold; 
-        }
+        #count { font-size: 1em; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -88,19 +114,24 @@
         ];
 
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        let cartCount = cart.length;
+        let cartCount = 0;
 
         function render() {
             ['slider1', 'slider2'].forEach((id, i) => {
                 const slider = document.getElementById(id);
                 slider.innerHTML = '';
                 products.filter(p => p.cat === i + 1).forEach(p => {
+                    const inCart = cart.filter(item => item.id === p.id)[0] || { qty: 0 };
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     const imgSrc = p.image || 'https://via.placeholder.com/100?text=No+Image';
                     card.innerHTML = `
                         <img class="product-img" src="${imgSrc}" alt="${p.name}">
-                        <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>+</button>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${p.id}, -1)" ${inCart.qty === 0 ? 'disabled' : ''}>-</button>
+                            <span class="quantity-count">${inCart.qty}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${p.id}, 1)" ${p.stock === 0 ? 'disabled' : ''}>+</button>
+                        </div>
                         <div class="product-info">
                             <p class="product-name">${p.name}</p>
                             <p class="product-price">¥${p.price}</p>
@@ -113,21 +144,31 @@
             updateCartUI();
         }
 
-        function addToCart(id) {
+        function updateQuantity(id, change) {
             const p = products.find(x => x.id === id);
-            if (p.stock > 0) {
+            const cartItem = cart.find(item => item.id === id) || { id: p.id, name: p.name, price: p.price, image: p.image, qty: 0 };
+
+            if (change > 0 && p.stock > 0) {
                 p.stock--;
-                cart.push({ name: p.name, price: p.price, image: p.image || 'https://via.placeholder.com/60?text=No+Image' });
-                localStorage.setItem('cart', JSON.stringify(cart));
-                cartCount = cart.length;
-                render();
-                alert(`${p.name}をカートに追加！`);
+                cartItem.qty++;
+            } else if (change < 0 && cartItem.qty > 0) {
+                p.stock++;
+                cartItem.qty--;
             }
+
+            if (cartItem.qty === 0) {
+                cart = cart.filter(item => item.id !== id);
+            } else if (!cart.includes(cartItem)) {
+                cart.push(cartItem);
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            render();
         }
 
         function updateCartUI() {
             cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            cartCount = cart.length;
+            cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
             const countSpan = document.getElementById('count');
             if (countSpan) countSpan.innerText = cartCount;
