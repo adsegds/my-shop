@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店</title>
     <link rel="stylesheet" href="style.css">
-    <script src="products.js" defer></script>
-    <script src="script.js" defer></script>
 </head>
 <body>
     <header>ローソン 和泉町店</header>
@@ -18,9 +16,9 @@
     <div class="category-tabs">
         <div class="tab-list">
             <a href="#" class="tab-item active">ペットボトル飲料</a>
-            <a href="snacks.html" class="tab-item">お菓子</a>
-            <a href="fried.html" class="tab-item">からあげくん</a>
-            <a href="bento.html" class="tab-item">お弁当</a>
+            <a href="#" class="tab-item">お菓子</a>
+            <a href="#" class="tab-item">からあげくん</a>
+            <a href="#" class="tab-item">お弁当</a>
         </div>
     </div>
 
@@ -28,7 +26,7 @@
     <section class="section">
         <div class="section-title">
             ペットボトル飲料
-            <a href="drinks.html">すべて表示 →</a>
+            <a href="#">すべて表示 →</a>
         </div>
         <div class="product-grid" id="drinks-grid"></div>
     </section>
@@ -37,17 +35,21 @@
     <section class="section">
         <div class="section-title">
             お菓子
-            <a href="snacks.html">すべて表示 →</a>
+            <a href="#">すべて表示 →</a>
         </div>
         <div class="product-grid" id="snacks-grid"></div>
     </section>
 
-    <!-- 注文するボタン（固定） -->
+    <!-- 注文するボタン -->
     <button class="checkout-btn" onclick="checkout()">
         <svg class="cart-icon" viewBox="0 0 24 24">
             <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
         </svg>
         注文する (<span id="cart-count">0</span>)
     </button>
+
+    <!-- JSはここに！ -->
+    <script src="products.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
