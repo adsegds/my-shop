@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ローソン 和泉町店</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="products.js"></script>
+    <link rel="stylesheet" href="/my-shop/style.css"> <!-- 絶対パス！ -->
+    <script src="/my-shop/products.js"></script> <!-- 絶対パス！ -->
 </head>
 <body>
     <header>ローソン 和泉町店</header>
     <div class="search-bar"><input type="text" placeholder="商品を検索..."></div>
     <div class="category-tabs">
         <div class="tab-list">
-            <a href="drinks.html" class="tab-item">ペットボトル飲料</a>
-            <a href="snacks.html" class="tab-item">お菓子</a>
-            <a href="fried.html" class="tab-item">からあげくん・揚げ物</a>
-            <a href="bento.html" class="tab-item">お弁当</a>
+            <a href="/my-shop/drinks.html" class="tab-item">ペットボトル飲料</a>
+            <a href="/my-shop/snacks.html" class="tab-item">お菓子</a>
+            <a href="/my-shop/fried.html" class="tab-item">からあげくん・揚げ物</a>
+            <a href="/my-shop/bento.html" class="tab-item">お弁当</a>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">ペットボトル飲料 <a href="drinks.html">すべて表示 →</a></div>
+        <div class="section-title">ペットボトル飲料 <a href="/my-shop/drinks.html">すべて表示 →</a></div>
         <div class="product-grid" id="drinks-grid"></div>
     </div>
 
     <div class="section">
-        <div class="section-title">お菓子 <a href="snacks.html">すべて表示 →</a></div>
+        <div class="section-title">お菓子 <a href="/my-shop/snacks.html">すべて表示 →</a></div>
         <div class="product-grid" id="snacks-grid"></div>
     </div>
 
@@ -79,7 +79,7 @@
         }
 
         function checkout() {
-            if (cart.length > 0) window.open('cart.html', '_blank');
+            if (cart.length > 0) window.open('/my-shop/cart.html', '_blank');
             else alert('カートが空です！');
         }
 
