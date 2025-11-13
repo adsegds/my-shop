@@ -7,7 +7,7 @@
 
 body {
     background: #f8f8f8;
-    padding-bottom: 80px;
+    padding-bottom: 90px;
 }
 
 header {
@@ -89,7 +89,7 @@ header {
     text-decoration: none;
 }
 
-/* 横スクロール商品グリッド */
+/* 横スクロールグリッド */
 .product-grid {
     display: flex;
     overflow-x: auto;
@@ -169,7 +169,7 @@ header {
     margin: 0 8px;
 }
 
-/* 注文するボタン */
+/* 注文ボタン */
 .checkout-btn {
     position: fixed;
     bottom: 16px;
