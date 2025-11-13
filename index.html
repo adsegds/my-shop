@@ -134,11 +134,13 @@
 
         render();
 
-        // スマホ対応：フォーカス時に更新
-        window.addEventListener('focus', () => {
-            cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            updateCartUI();
-            render();
+        // スマホ・PC両対応：ページが表示されたら更新
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                updateCartUI();
+                render();
+            }
         });
 
         // 別タブ対応
