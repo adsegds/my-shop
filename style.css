@@ -139,24 +139,24 @@ header {
     margin: 0 8px; 
 }
 
-.cart-btn { 
-    position: fixed; 
-    bottom: 16px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    background: #000; 
-    color: white; 
-    border: none; 
-    padding: 12px 24px; 
-    border-radius: 30px; 
-    font-size: 16px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
-    z-index: 999; 
-    display: none; 
-    align-items: center; 
-    gap: 8px; 
+.cart-btn {
+    position: fixed;
+    top: 80px;           /* ヘッダーの下 */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 9999;       /* 最前面 */
+    display: none;
+    align-items: center;
+    gap: 6px;
 }
 
 .cart-icon { 
