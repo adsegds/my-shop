@@ -8,7 +8,6 @@ const PRODUCTS = [
     { id: 6, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "img/chips.jpg", stock: 0, cat: 2 }
 ];
 
-// カテゴリー別フィルター
 function getProductsByCat(cat) {
     return PRODUCTS.filter(p => p.cat === cat);
 }
