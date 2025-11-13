@@ -1,11 +1,56 @@
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-body { background: #f8f8f8; padding-bottom: 80px; }
-header { background: #032f4b; color: white; padding: 16px; text-align: center; font-size: 18px; }
-.search-bar { padding: 12px; background: white; }
-.search-bar input { width: 100%; padding: 12px; border: none; border-radius: 25px; background: #f0f0f0; font-size: 16px; }
-.category-tabs { overflow-x: auto; padding: 12px 0; background: white; -webkit-overflow-scrolling: touch; }
-.tab-list { display: inline-flex; gap: 12px; padding: 0 12px; }
-.tab-item { border: 1px solid #ddd; border-radius: 20px; padding: 8px 16px; font-size: 14px; color: #333; text-decoration: none; }
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: sans-serif; 
+}
+
+body { 
+    background: #f8f8f8; 
+    padding-bottom: 80px; 
+}
+
+header { 
+    background: #032f4b; 
+    color: white; 
+    padding: 16px; 
+    text-align: center; 
+    font-size: 18px; 
+}
+
+.search-bar { 
+    padding: 12px; 
+    background: white; 
+}
+
+.search-bar input { 
+    width: 100%; 
+    padding: 12px; 
+    border: none; 
+    border-radius: 25px; 
+    background: #f0f0f0; 
+    font-size: 16px; 
+}
+
+.category-tabs { 
+    overflow-x: auto; 
+    padding: 12px 0; 
+    background: white; 
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+}
+
+.category-tabs::-webkit-scrollbar { 
+    display: none; /* Chrome, Safari */
+}
+
+.tab-list { 
+    display: inline-flex; 
+    gap: 12px; 
+    padding: 0 12px; 
+}
+
+/* 重複削除！1つだけ */
 .tab-item {
     background: white;
     border: 1px solid #ddd;
@@ -14,31 +59,127 @@ header { background: #032f4b; color: white; padding: 16px; text-align: center; f
     font-size: 14px;
     color: #333;
     text-decoration: none;
+    transition: all 0.2s ease;
 }
 
-/* アクティブも同じデザイン！ */
 .tab-item.active {
-    background: #f0f0f0;        /* ちょっとだけ濃く */
+    background: #f0f0f0;
     border-color: #aaa;
-    font-weight: 600;           /* 太字で「選択中」感 */
+    font-weight: 600;
 }
-.section { padding: 16px 12px 8px; }
-.section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; }
-.section-title a { color: #666; font-size: 14px; text-decoration: none; }
-.product-grid { display: flex; overflow-x: auto; gap: 12px; -webkit-overflow-scrolling: touch; }
-.product-card { background: white; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); min-width: 140px; position: relative; padding-bottom: 8px; }
-.product-img { width: 100%; height: 120px; object-fit: contain; padding: 12px; }
-.add-btn { position: absolute; right: 8px; bottom: 44px; background: white; border: 2px solid #007bff; color: #007bff; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.product-price { font-weight: bold; color: #e91e63; font-size: 15px; margin: 4px 8px; }
-.product-name { font-size: 13px; color: #333; margin: 0 8px 4px; }
-.sponsor { font-size: 11px; color: #999; margin: 0 8px; }
-.checkout-btn { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #4caf50; color: white; border: none; padding: 12px 24px; border-radius: 30px; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: none; align-items: center; gap: 8px; }
-.checkout-btn.show { display: flex; }
-.cart-icon { width: 20px; height: 20px; fill: white; }
-/* セクション非表示 */
+
+/* ここに padding を戻す！ */
 .section {
-    display: none;
+    padding: 16px 12px 8px;
+    display: none; /* 非表示 */
 }
+
 .section.active {
-    display: block;
+    display: block; /* 表示 */
+}
+
+.section-title { 
+    font-size: 16px; 
+    font-weight: 600; 
+    margin-bottom: 12px; 
+    display: flex; 
+    justify-content: space-between; 
+}
+
+.section-title a { 
+    color: #666; 
+    font-size: 14px; 
+    text-decoration: none; 
+}
+
+.product-grid { 
+    display: flex; 
+    overflow-x: auto; 
+    gap: 12px; 
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.product-grid::-webkit-scrollbar { 
+    display: none; 
+}
+
+.product-card { 
+    background: white; 
+    border-radius: 12px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08); 
+    min-width: 140px; 
+    position: relative; 
+    padding-bottom: 8px; 
+}
+
+.product-img { 
+    width: 100%; 
+    height: 120px; 
+    object-fit: contain; 
+    padding: 12px; 
+}
+
+.add-btn { 
+    position: absolute; 
+    right: 8px; 
+    bottom: 44px; 
+    background: white; 
+    border: 2px solid #007bff; 
+    color: #007bff; 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    font-size: 18px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+}
+
+.product-price { 
+    font-weight: bold; 
+    color: #e91e63; 
+    font-size: 15px; 
+    margin: 4px 8px; 
+}
+
+.product-name { 
+    font-size: 13px; 
+    color: #333; 
+    margin: 0 8px 4px; 
+}
+
+.sponsor { 
+    font-size: 11px; 
+    color: #999; 
+    margin: 0 8px; 
+}
+
+.checkout-btn { 
+    position: fixed; 
+    bottom: 16px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    background: #4caf50; 
+    color: white; 
+    border: none; 
+    padding: 12px 24px; 
+    border-radius: 30px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+    display: none; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.checkout-btn.show { 
+    display: flex; 
+}
+
+.cart-icon { 
+    width: 20px; 
+    height: 20px; 
+    fill: white; 
 }
