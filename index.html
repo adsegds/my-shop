@@ -67,6 +67,7 @@
     <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
+    <!-- SVGカートアイコン付き注文ボタン -->
     <button class="checkout-fixed" onclick="checkout()">
         <svg class="cart-icon-svg" viewBox="0 0 24 24" width="24" height="24">
             <path fill="white" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
@@ -75,7 +76,6 @@
     </button>
 
     <script>
-        // 省略（前と同じ）
         const products = [
             { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
             { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
@@ -128,7 +128,7 @@
             cartCount = cart.length;
 
             const countSpan = document.getElementById('count');
-            if (countSpan) countSpan.innerText = cartCount;
+            if (countSpan) countSpan.innerText = cartCount; // ← 半角数字！
 
             const checkoutBtn = document.querySelector('.checkout-fixed');
             if (checkoutBtn) {
