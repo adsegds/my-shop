@@ -36,9 +36,13 @@
             display: none; 
             display: flex; 
             align-items: center; 
-            gap: 4px; /* ← 数字のズレ調整 */
+            gap: 6px; 
         }
         .cart-icon-svg { width: 24px; height: 24px; fill: white; }
+        #count { 
+            font-size: 1em; 
+            font-weight: bold; 
+        }
     </style>
 </head>
 <body>
@@ -60,7 +64,6 @@
 
     <div class="product-grid" id="grid"></div>
 
-    <!-- SVGカートアイコン付き注文ボタン -->
     <button class="checkout-fixed" onclick="checkout()">
         <svg class="cart-icon-svg" viewBox="0 0 24 24" width="24" height="24">
             <path fill="white" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
@@ -99,7 +102,22 @@
                 grid.appendChild(card);
             });
 
-            // カートカウント更新
+            updateCartUI();
+        }
+
+        function addToCart(id) {
+            const p = products.find(x => x.id === id);
+            if (p.stock > 0) {
+                p.stock--;
+                cart.push({ name: p.name, price: p.price, image: p.image || 'https://via.placeholder.com/60?text=No+Image' });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                cartCount = cart.length;
+                render();
+                alert(`${p.name}をカートに追加！`);
+            }
+        }
+
+        function updateCartUI() {
             cart = JSON.parse(localStorage.getItem('cart') || '[]');
             cartCount = cart.length;
 
@@ -112,17 +130,6 @@
             }
         }
 
-        function addToCart(id) {
-            const p = products.find(x => x.id === id);
-            if (p.stock > 0) {
-                p.stock--;
-                cart.push({ name: p.name, price: p.price, image: p.image || 'https://via.placeholder.com/60?text=No+Image' });
-                localStorage.setItem('cart', JSON.stringify(cart));
-                render();
-                alert(`${p.name}をカートに追加！`);
-            }
-        }
-
         function checkout() {
             if (cartCount > 0) {
                 window.open('cart.html', '_blank');
@@ -131,10 +138,8 @@
             }
         }
 
-        // ページ読み込み時
         render();
 
-        // カート変更検知
         window.addEventListener('storage', (e) => {
             if (e.key === 'cart') render();
         });
