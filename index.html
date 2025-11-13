@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ペットボトル飲料</title>
+    <title>ローソン 和泉町店</title>
     <style>
         /* 省略（前と同じ） */
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
@@ -13,8 +13,11 @@
         .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px; scrollbar-width: none; }
         .category-slider { display: inline-flex; gap: 15px; }
         .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 10px 10px 70px 10px; }
-        .product-card { position: relative; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .category { padding: 15px 10px 5px; font-weight: bold; color: #333; font-size: 1.1em; cursor: pointer; }
+        .category-arrow { float: right; color: #666; font-size: 0.9em; }
+        .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 50px; scrollbar-width: none; }
+        .slider { display: inline-flex; gap: 12px; }
+        .product-card { position: relative; background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
         .product-info { padding: 8px; }
         .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
@@ -72,7 +75,7 @@
     </style>
 </head>
 <body>
-    <header><h1>ペットボトル飲料</h1></header>
+    <header><h1>ローソン 和泉町店</h1></header>
 
     <div class="search-bar">
         <input type="text" placeholder="商品を検索...">
@@ -80,7 +83,6 @@
 
     <div class="category-slider-container">
         <div class="category-slider">
-            <a href="index.html" class="category-item">ホーム</a>
             <a href="drinks.html" class="category-item">ペットボトル飲料</a>
             <a href="snacks.html" class="category-item">お菓子</a>
             <a href="fried.html" class="category-item">からあげくん・揚げ物</a>
@@ -88,7 +90,11 @@
         </div>
     </div>
 
-    <div class="product-grid" id="grid"></div>
+    <div class="category" onclick="location.href='drinks.html'">ペットボトル飲料 <span class="category-arrow">></span></div>
+    <div class="slider-container"><div class="slider" id="slider1"></div></div>
+
+    <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
+    <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
     <button class="checkout-fixed" onclick="checkout()">
         <svg class="cart-icon-svg" viewBox="0 0 24 24" width="24" height="24">
@@ -99,38 +105,40 @@
 
     <script>
         const products = [
-            { id: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
-            { id: 2, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
-            { id: 3, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 15 },
-            { id: 4, name: "ポカリスウェット (900ml)", price: 258, image: "https://i.imgur.com/pocari.jpg", stock: 8 },
-            { id: 5, name: "アクエリアス (950ml)", price: 258, image: "https://i.imgur.com/aquarius.jpg", stock: 12 },
-            { id: 6, name: "コカ・コーラ (410ml)", price: 418, image: "https://i.imgur.com/coke410.jpg", stock: 0 }
+            { id: 1, cat: 1, name: "クラフトボス甘くないイタリアーノ (500ml)", price: 258, image: "https://i.imgur.com/boss.jpg", stock: 10 },
+            { id: 2, cat: 1, name: "コカ・コーラ (500ml)", price: 248, image: "https://i.imgur.com/coke.jpg", stock: 20 },
+            { id: 3, cat: 1, name: "サントリー 天然水 (2L)", price: 188, image: "https://i.imgur.com/water.jpg", stock: 15 },
+            { id: 4, cat: 2, name: "プリングルズ<サワークリーム&オニオン> (26g)", price: 398, image: "https://i.imgur.com/pringles.jpg", stock: 8 },
+            { id: 5, cat: 2, name: "金のとりから からあげくん", price: 88, image: "https://i.imgur.com/torikara.jpg", stock: 12 },
+            { id: 6, cat: 2, name: "LW こんがり焼しそチップス (47g)", price: 178, image: "https://i.imgur.com/chips.jpg", stock: 0 }
         ];
 
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         let cartCount = 0;
 
         function render() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            products.forEach(p => {
-                const inCart = cart.filter(item => item.id === p.id)[0] || { qty: 0 };
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                const imgSrc = p.image || 'https://via.placeholder.com/100?text=No+Image';
-                card.innerHTML = `
-                    <img class="product-img" src="${imgSrc}" alt="${p.name}">
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" onclick="updateQuantity(${p.id}, -1)" ${inCart.qty === 0 ? 'disabled' : ''}>-</button>
-                        <span class="quantity-count">${inCart.qty}</span>
-                        <button class="quantity-btn" onclick="updateQuantity(${p.id}, 1)" ${p.stock === 0 ? 'disabled' : ''}>+</button>
-                    </div>
-                    <div class="product-info">
-                        <p class="product-name">${p.name}</p>
-                        <p class="product-price">¥${p.price}</p>
-                    </div>
-                `;
-                grid.appendChild(card);
+            ['slider1', 'slider2'].forEach((id, i) => {
+                const slider = document.getElementById(id);
+                slider.innerHTML = '';
+                products.filter(p => p.cat === i + 1).forEach(p => {
+                    const inCart = cart.filter(item => item.id === p.id)[0] || { qty: 0 };
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    const imgSrc = p.image || 'https://via.placeholder.com/100?text=No+Image';
+                    card.innerHTML = `
+                        <img class="product-img" src="${imgSrc}" alt="${p.name}">
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${p.id}, -1)" ${inCart.qty === 0 ? 'disabled' : ''}>-</button>
+                            <span class="quantity-count">${inCart.qty}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${p.id}, 1)" ${p.stock === 0 ? 'disabled' : ''}>+</button>
+                        </div>
+                        <div class="product-info">
+                            <p class="product-name">${p.name}</p>
+                            <p class="product-price">¥${p.price}</p>
+                        </div>
+                    `;
+                    slider.appendChild(card);
+                });
             });
 
             updateCartUI();
