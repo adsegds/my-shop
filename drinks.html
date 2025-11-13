@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ペットボトル飲料</title>
+    <link rel="stylesheet" href="style.css">
     <script src="products.js"></script>
-    <style>
-        /* index.html と同じスタイルをコピペ */
-    </style>
 </head>
 <body>
     <header>ペットボトル飲料</header>
@@ -27,9 +25,9 @@
         <div class="product-grid" id="grid"></div>
     </div>
 
-    <button class="checkout-fixed" onclick="checkout()">
+    <button class="cart-btn" onclick="checkout()">
         <svg class="cart-icon" viewBox="0 0 24 24"><path fill="white" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.76 1.38-.2 3.08 1.24 3.08h12V15H6.8l.96-1.74H17.5c.71 0 1.35-.45 1.59-1.12L23 6H6.34l-.93-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-        注文する (<span id="count">0</span>)
+        カートを見る・<span id="cart-count">0</span>
     </button>
 
     <script>
@@ -42,15 +40,12 @@
                 const inCart = cart.find(i => i.id === p.id)?.qty || 0;
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.style.position = 'relative';
                 card.innerHTML = `
                     <img class="product-img" src="${p.image}" alt="${p.name}">
                     <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>+</button>
-                    <div style="padding: 0 8px 8px;">
-                        <div class="product-price">¥${p.price}</div>
-                        <div class="product-name">${p.name}</div>
-                        <div class="sponsor">©${p.name.split(' ')[0]}</div>
-                    </div>
+                    <div class="product-price">¥${p.price}</div>
+                    <div class="product-name">${p.name}</div>
+                    <div class="sponsor">©${p.name.split(' ')[0]}</div>
                 `;
                 grid.appendChild(card);
             });
@@ -70,8 +65,8 @@
 
         function updateCartUI() {
             const count = cart.reduce((s, i) => s + i.qty, 0);
-            document.getElementById('count').textContent = count;
-            document.querySelector('.checkout-fixed').style.display = count > 0 ? 'flex' : 'none';
+            document.getElementById('cart-count').textContent = count;
+            document.querySelector('.cart-btn').style.display = count > 0 ? 'flex' : 'none';
         }
 
         function checkout() {
