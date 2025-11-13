@@ -134,7 +134,6 @@
 
         render();
 
-        // スマホ・PC両対応：ページが表示されたら更新
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -143,7 +142,6 @@
             }
         });
 
-        // 別タブ対応
         window.addEventListener('storage', e => { if (e.key === 'cart') render(); });
     </script>
 </body>
