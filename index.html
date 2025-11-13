@@ -18,15 +18,32 @@
         .slider-container { overflow-x: auto; white-space: nowrap; padding: 0 10px 50px; scrollbar-width: none; }
         .slider { display: inline-flex; gap: 12px; }
         .product-card { position: relative; background: white; border-radius: 12px; width: 140px; flex-shrink: 0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .product-img { width: 100%; height: 100px; object-fit: cover; }
-        .product-info { padding: 8px; }
-        .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
-        .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
-        .quantity-controls { position: absolute; right: 8px; bottom: 8px; background: white; border-radius: 20px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow: hidden; }
-        .quantity-btn { background: #007bff; color: white; border: none; width: 28px; height: 28px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .quantity-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .quantity-count { width: 30px; text-align: center; font-weight: bold; font-size: 1em; }
-        .checkout-fixed { position: fixed; top: 70px; right: 15px; background: #4caf50; color: white; border: none; padding: 14px 20px 14px 14px; border-radius: 28px; font-size: 1.3em; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 999; display: none; display: flex; align-items: center; gap: 6px; }
+        .product-img { width: 100%; height: 140px; object-fit: contain; background: white; padding: 10px; }
+        .add-btn { 
+            position: absolute; 
+            right: 8px; 
+            bottom: 8px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            width: 32px; 
+            height: 32px; 
+            border-radius: 50%; 
+            font-size: 1.2em; 
+            cursor: pointer; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+        }
+        .add-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .product-info { padding: 8px; text-align: left; }
+        .product-name { font-size: 0.85em; margin: 0 0 2px; line-height: 1.2; }
+        .product-price { font-weight: bold; color: #e91e63; font-size: 1em; margin: 0; }
+        .sponsor { font-size: 0.7em; color: #666; text-align: right; margin-top: 2px; }
+        .checkout-fixed { 
+            position: fixed; top: 70px; right: 15px; background: #4caf50; color: white; 
+            border: none; padding: 14px 20px 14px 14px; border-radius: 28px; font-size: 1.3em; 
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 999; 
+            display: none; display: flex; align-items: center; gap: 6px; 
+        }
         .cart-icon-svg { width: 24px; height: 24px; fill: white; }
         #count { font-size: 1em; font-weight: bold; }
     </style>
@@ -42,8 +59,10 @@
             <a href="bento.html" class="category-item">お弁当</a>
         </div>
     </div>
+
     <div class="category" onclick="location.href='drinks.html'">ペットボトル飲料 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider1"></div></div>
+
     <div class="category" onclick="location.href='snacks.html'">お菓子 <span class="category-arrow">></span></div>
     <div class="slider-container"><div class="slider" id="slider2"></div></div>
 
@@ -68,14 +87,11 @@
                     card.className = 'product-card';
                     card.innerHTML = `
                         <img class="product-img" src="${p.image}" alt="${p.name}">
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="updateQuantity(${p.id}, -1)" ${inCart.qty === 0 ? 'disabled' : ''}>-</button>
-                            <span class="quantity-count">${inCart.qty}</span>
-                            <button class="quantity-btn" onclick="updateQuantity(${p.id}, 1)" ${p.stock === 0 ? 'disabled' : ''}>+</button>
-                        </div>
+                        <button class="add-btn" onclick="addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}>+</button>
                         <div class="product-info">
                             <p class="product-name">${p.name}</p>
                             <p class="product-price">¥${p.price}</p>
+                            <p class="sponsor">©${p.name.split(' ')[0]}<br>スポンサー</p>
                         </div>
                     `;
                     slider.appendChild(card);
@@ -84,25 +100,18 @@
             updateCartUI();
         }
 
-        function updateQuantity(id, change) {
+        function addToCart(id) {
             const p = PRODUCTS.find(x => x.id === id);
-            const cartItem = cart.find(item => item.id === id) || { id: p.id, name: p.name, price: p.price, image: p.image, qty: 0 };
-            if (change > 0 && p.stock > 0) {
+            if (p.stock > 0) {
                 p.stock--;
+                const cartItem = cart.find(item => item.id === id) || { id: p.id, name: p.name, price: p.price, image: p.image, qty: 0 };
                 cartItem.qty++;
-            } else if (change < 0 && cartItem.qty > 0) {
-                p.stock++;
-                cartItem.qty--;
+                if (!cart.find(item => item.id === id)) {
+                    cart.push(cartItem);
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                render();
             }
-            if (cartItem.qty === 0) {
-                cart = cart.filter(item => item.id !== id);
-            } else if (!cart.find(item => item.id === id)) {
-                cart.push(cartItem);
-            } else {
-                cart = cart.map(item => item.id === id ? cartItem : item);
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            render();
         }
 
         function updateCartUI() {
