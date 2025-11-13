@@ -6,24 +6,25 @@
     <title>ペットボトル飲料</title>
     <script src="products.js"></script>
     <style>
+        * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: #f5f5f5; }
-        header { background: #032f4b; color: white; padding: 15px; text-align: center; }
-        .search-bar { padding: 10px; }
-        .search-bar input { width: 95%; padding: 12px; border-radius: 25px; border: none; font-size: 1em; }
-        .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px; scrollbar-width: none; }
-        .category-slider { display: inline-flex; gap: 15px; }
-        .category-item { background: #fff; border-radius: 20px; padding: 8px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-weight: bold; color: #333; text-decoration: none; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 10px 10px 70px 10px; }
+        header { background: #032f4b; color: white; padding: 15px; text-align: center; font-size: 1.1em; }
+        .search-bar { padding: 10px; background: white; }
+        .search-bar input { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #ddd; font-size: 1em; }
+        .category-slider-container { overflow-x: auto; white-space: nowrap; padding: 10px 0; scrollbar-width: none; background: white; }
+        .category-slider { display: inline-flex; gap: 12px; padding: 0 10px; }
+        .category-item { background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 6px 16px; font-size: 0.9em; color: #333; text-decoration: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding: 10px 10px 70px; }
         .product-card { position: relative; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .product-img { width: 100%; height: 100px; object-fit: cover; }
-        .product-info { padding: 8px; }
-        .product-name { font-size: 0.8em; margin: 0 0 3px; white-space: normal; line-height: 1.2; }
-        .product-price { font-weight: bold; color: #e91e63; font-size: 1em; }
+        .product-info { padding: 8px; text-align: left; }
+        .product-name { font-size: 0.8em; margin: 0 0 3px; line-height: 1.2; }
+        .product-price { font-weight: bold; color: #e91e63; font-size: 1em; margin: 0; }
         .quantity-controls { position: absolute; right: 8px; bottom: 8px; background: white; border-radius: 20px; display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); overflow: hidden; }
         .quantity-btn { background: #007bff; color: white; border: none; width: 28px; height: 28px; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .quantity-btn:disabled { background: #ccc; cursor: not-allowed; }
         .quantity-count { width: 30px; text-align: center; font-weight: bold; font-size: 1em; }
-        .checkout-fixed { position: fixed; top: 70px; right: 15px; background: #4caf50; color: white; border: none; padding: 14px 20px 14px 14px; border-radius: 28px; font-size: 1.3em; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 999; display: none; display: flex; align-items: center; gap: 6px; }
+        .checkout-fixed { position: fixed; top: 70px; right: 15px; background: #4caf50; color: white; border: none; padding: 14px 20px; border-radius: 28px; font-size: 1.3em; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 999; display: none; display: flex; align-items: center; gap: 6px; }
         .cart-icon-svg { width: 24px; height: 24px; fill: white; }
         #count { font-size: 1em; font-weight: bold; }
     </style>
@@ -103,9 +104,7 @@
             const countSpan = document.getElementById('count');
             if (countSpan) countSpan.innerText = cartCount;
             const checkoutBtn = document.querySelector('.checkout-fixed');
-            if (checkoutBtn) {
-                checkoutBtn.style.display = cartCount > 0 ? 'flex' : 'none';
-            }
+            if (checkoutBtn) checkoutBtn.style.display = cartCount > 0 ? 'flex' : 'none';
         }
 
         function checkout() {
@@ -117,8 +116,15 @@
         }
 
         render();
-        window.addEventListener('storage', (e) => { if (e.key === 'cart') render(); });
-        window.addEventListener('focus', render);
+
+        // スマホ対応
+        window.addEventListener('focus', () => {
+            cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            updateCartUI();
+            render();
+        });
+
+        window.addEventListener('storage', e => { if (e.key === 'cart') render(); });
     </script>
 </body>
 </html>
